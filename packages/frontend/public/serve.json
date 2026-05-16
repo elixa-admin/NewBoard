@@ -1,0 +1,18 @@
+{
+  "headers": [
+    {
+      "source": "/api/**",
+      "headers": [
+        { "key": "Content-Type", "value": "application/json" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    }
+  ],
+  "rewrites": [
+    { "source": "/api/health",           "destination": "/api/health.json" },
+    { "source": "/api/session/current",  "destination": "/api/session/current.json" },
+    { "source": "/api/recommendations",  "destination": "/api/recommendations.json" }
+  ],
+  "cleanUrls": true,
+  "trailingSlash": false
+}

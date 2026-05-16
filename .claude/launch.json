@@ -2,16 +2,11 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "Backend",
-      "runtimeExecutable": "bash",
-      "runtimeArgs": ["start-backend.sh"],
-      "port": 4201
-    },
-    {
-      "name": "Frontend",
+      "name": "Dashboard",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--workspace=packages/frontend"],
-      "port": 4200
+      "runtimeArgs": ["run", "serve:frontend"],
+      "port": 4202,
+      "cwd": "/Users/brandondienar/Documents/Codex/Projects/NewBoard"
     }
   ]
 }

@@ -1,0 +1,11 @@
+{
+  "data": [{
+    "id": "rec-1",
+    "suggested": "haiku",
+    "current": "sonnet",
+    "confidence": 0.87,
+    "reason": "Your recent tasks are well within Haiku's capability. Switching saves ~73% per call.",
+    "potentialSavings": 400,
+    "tasksSinceLastRec": 5
+  }]
+}

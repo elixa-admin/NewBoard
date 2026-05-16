@@ -9,6 +9,9 @@
   ],
   "scripts": {
     "dev": "concurrently \"npm run dev -w packages/backend\" \"npm run dev -w packages/frontend\"",
+    "serve": "node server.cjs",
+    "serve:frontend": "serve packages/frontend/public --listen 4202 --no-clipboard",
+    "serve:api": "node backend-api.cjs",
     "build": "npm run build -w packages/backend && npm run build -w packages/frontend",
     "test": "npm run test -w packages/backend && npm run test -w packages/frontend",
     "test:watch": "concurrently \"npm run test:watch -w packages/backend\" \"npm run test:watch -w packages/frontend\"",

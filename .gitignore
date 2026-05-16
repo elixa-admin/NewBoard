@@ -33,3 +33,4 @@ Thumbs.db
 
 # Runtime
 .claude/token-usage.json
+.vercel
