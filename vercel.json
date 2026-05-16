@@ -2,9 +2,11 @@
   "version": 2,
   "buildCommand": "npm run build",
   "outputDirectory": "packages/frontend/public",
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1.json" },
-    { "src": "/(.*)", "dest": "/index.html" }
+  "rewrites": [
+    { "source": "/api/health", "destination": "/api/health.json" },
+    { "source": "/api/session/current", "destination": "/api/session/current.json" },
+    { "source": "/api/recommendations", "destination": "/api/recommendations.json" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
     {
