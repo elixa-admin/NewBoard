@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Usage Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f3f4f6;
+            color: #111827;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .header p {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .alert-banner {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .alert-banner.ok {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+
+        .alert-banner.ok .message {
+            color: #166534;
+        }
+
+        .alert-banner.ok .badge {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .alert-banner.warning {
+            background: #fefce8;
+            border-color: #fde68a;
+        }
+
+        .alert-banner.warning .message {
+            color: #854d0e;
+        }
+
+        .alert-banner.warning .badge {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .alert-banner.critical {
+            background: #fef2f2;
+            border-color: #fecaca;
+        }
+
+        .alert-banner.critical .message {
+            color: #991b1b;
+        }
+
+        .alert-banner.critical .badge {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .message {
+            font-weight: 600;
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+
+        .gauge-container {
+            margin-bottom: 1rem;
+        }
+
+        .gauge {
+            width: 100%;
+            height: 0.75rem;
+            background: #e5e7eb;
+            border-radius: 9999px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .gauge-fill {
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.3s ease;
+        }
+
+        .gauge-fill.session { background: #3b82f6; }
+        .gauge-fill.weekly { background: #8b5cf6; }
+
+        .gauge-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem;
+        }
+
+        .gauge-value {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .gauge-percent {
+            color: #6b7280;
+        }
+
+        .info-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem;
+        }
+
+        .info-label {
+            color: #6b7280;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .section {
+            margin-bottom: 1.5rem;
+        }
+
+        .section h2 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #111827;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f9fafb;
+        }
+
+        th {
+            padding: 0.75rem;
+            text-align: left;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #6b7280;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 0.875rem;
+        }
+
+        tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .model-name {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .model-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .model-bar-fill {
+            height: 0.5rem;
+            background: #e5e7eb;
+            border-radius: 9999px;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .model-bar-inner {
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.3s ease;
+        }
+
+        .bar-haiku { background: #3b82f6; }
+        .bar-sonnet { background: #8b5cf6; }
+        .bar-opus { background: #ec4899; }
+
+        .model-percent {
+            min-width: 40px;
+            text-align: right;
+            color: #6b7280;
+            font-size: 0.75rem;
+        }
+
+        .recommendations-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .recommendation-card {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+
+        .rec-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .rec-title {
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .rec-model {
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .rec-current {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        .rec-confidence {
+            text-align: right;
+        }
+
+        .rec-confidence-value {
+            font-weight: 600;
+            color: #2563eb;
+            font-size: 1.125rem;
+        }
+
+        .rec-confidence-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .rec-reason {
+            font-size: 0.875rem;
+            color: #374151;
+            margin-bottom: 0.75rem;
+        }
+
+        .rec-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #6b7280;
+            padding-top: 0.75rem;
+            border-top: 1px solid #dbeafe;
+        }
+
+        .rec-savings {
+            font-weight: 600;
+        }
+
+        .rec-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-accept {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-ignore {
+            background: #e5e7eb;
+            color: #1f2937;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #6b7280;
+            padding: 2rem;
+        }
+
+        .loading {
+            text-align: center;
+            color: #6b7280;
+            padding: 1rem;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            color: #991b1b;
+            margin-bottom: 1.5rem;
+        }
+
+        .timestamp {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Token Usage Dashboard</h1>
+        <p id="status">Loading...</p>
+    </div>
+
+    <div class="container">
+        <div id="error-container"></div>
+
+        <!-- Alert Banner -->
+        <div id="alert-container"></div>
+
+        <!-- Overview Gauges -->
+        <div class="grid">
+            <div class="card">
+                <h2>Session Usage</h2>
+                <div class="gauge-container">
+                    <div class="gauge">
+                        <div class="gauge-fill session" id="session-gauge"></div>
+                    </div>
+                    <div class="gauge-label">
+                        <span class="gauge-value" id="session-value">-</span>
+                        <span class="gauge-percent" id="session-percent">-%</span>
+                    </div>
+                </div>
+                <div class="info-group" id="session-info"></div>
+            </div>
+
+            <div class="card">
+                <h2>Weekly Usage</h2>
+                <div class="gauge-container">
+                    <div class="gauge">
+                        <div class="gauge-fill weekly" id="weekly-gauge"></div>
+                    </div>
+                    <div class="gauge-label">
+                        <span class="gauge-value" id="weekly-value">-</span>
+                        <span class="gauge-percent" id="weekly-percent">-%</span>
+                    </div>
+                </div>
+                <div class="info-group" id="weekly-info"></div>
+            </div>
+
+            <div class="card">
+                <h2>Session Info</h2>
+                <div class="info-group">
+                    <div class="info-item">
+                        <span class="info-label">Project</span>
+                        <span class="info-value" id="project">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Total Cost</span>
+                        <span class="info-value" id="total-cost">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Tool Calls</span>
+                        <span class="info-value" id="call-count">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Started</h2>
+                <div class="info-group">
+                    <div id="started-time">-</div>
+                    <div class="timestamp" id="session-id">-</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Breakdown -->
+        <div class="section card">
+            <h2>Model Usage</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Model</th>
+                        <th>Calls</th>
+                        <th>Tokens</th>
+                        <th>Cost</th>
+                        <th>Usage</th>
+                    </tr>
+                </thead>
+                <tbody id="model-table">
+                    <tr><td colspan="5" class="empty-state">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="section card">
+            <h2>Recommendations</h2>
+            <div id="recommendations-container">
+                <div class="empty-state">Loading recommendations...</div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Token Usage Dashboard • Monitoring Claude Code sessions</p>
+            <p>Data refreshes every 30 seconds</p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+
+        async function fetchData() {
+            try {
+                const [sessionRes, recsRes] = await Promise.all([
+                    fetch(`${API_BASE}/session/current`),
+                    fetch(`${API_BASE}/recommendations`)
+                ]);
+
+                if (!sessionRes.ok || !recsRes.ok) {
+                    throw new Error(`API error: ${sessionRes.status}, ${recsRes.status}`);
+                }
+
+                const sessionData = await sessionRes.json();
+                const recsData = await recsRes.json();
+
+                renderDashboard(sessionData, recsData.data || []);
+                updateStatus('Last updated: ' + new Date().toLocaleTimeString());
+            } catch (err) {
+                console.error('Dashboard error:', err);
+                showError('Failed to load dashboard data. Check that backend is running on http://localhost:4201');
+                updateStatus('Error loading data');
+            }
+        }
+
+        function renderDashboard(sessionData, recommendations) {
+            const { data, thresholds, alerts } = sessionData;
+
+            // Alert Banner
+            if (alerts && alerts.length > 0) {
+                const alert = alerts[0];
+                const alertHtml = `
+                    <div class="alert-banner ${alert.level}">
+                        <div class="message">${alert.message}</div>
+                        <span class="badge">${thresholds.session.percent}%</span>
+                    </div>
+                `;
+                document.getElementById('alert-container').innerHTML = alertHtml;
+            }
+
+            // Session Gauge
+            const sessionPercent = parseFloat(thresholds.session.percent);
+            document.getElementById('session-gauge').style.width = Math.min(sessionPercent, 100) + '%';
+            document.getElementById('session-value').textContent =
+                `${thresholds.session.used.toLocaleString()} / ${thresholds.session.capacity.toLocaleString()}`;
+            document.getElementById('session-percent').textContent = sessionPercent.toFixed(1) + '%';
+
+            // Weekly Gauge
+            const weeklyPercent = parseFloat(thresholds.weekly.percent);
+            document.getElementById('weekly-gauge').style.width = Math.min(weeklyPercent, 100) + '%';
+            document.getElementById('weekly-value').textContent =
+                `${thresholds.weekly.used.toLocaleString()} / ${thresholds.weekly.capacity.toLocaleString()}`;
+            document.getElementById('weekly-percent').textContent = weeklyPercent.toFixed(1) + '%';
+
+            // Session Info
+            document.getElementById('project').textContent = data.project;
+            document.getElementById('total-cost').textContent = '$' + data.totalCost;
+            document.getElementById('call-count').textContent = data.callCount;
+            document.getElementById('started-time').textContent = new Date(data.startedAt).toLocaleString();
+            document.getElementById('session-id').textContent = 'ID: ' + data.sessionId;
+
+            // Model Breakdown
+            let modelHtml = '';
+            let totalTokens = data.totalTokens;
+            const models = ['haiku', 'sonnet', 'opus'];
+
+            models.forEach(model => {
+                const breakdown = data.modelBreakdown[model];
+                if (breakdown) {
+                    const percent = (breakdown.tokens / totalTokens) * 100;
+                    const barClass = model === 'haiku' ? 'bar-haiku' : model === 'sonnet' ? 'bar-sonnet' : 'bar-opus';
+                    modelHtml += `
+                        <tr>
+                            <td class="model-name">${model.charAt(0).toUpperCase() + model.slice(1)}</td>
+                            <td>${breakdown.calls}</td>
+                            <td>${breakdown.tokens.toLocaleString()}</td>
+                            <td>$${breakdown.cost}</td>
+                            <td>
+                                <div class="model-bar">
+                                    <div class="model-bar-fill">
+                                        <div class="model-bar-inner ${barClass}" style="width: ${percent}%"></div>
+                                    </div>
+                                    <span class="model-percent">${percent.toFixed(1)}%</span>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+            });
+            document.getElementById('model-table').innerHTML = modelHtml;
+
+            // Recommendations
+            if (recommendations.length === 0) {
+                document.getElementById('recommendations-container').innerHTML =
+                    '<div class="empty-state">No recommendations yet. Keep using Claude Code to gather usage patterns.</div>';
+            } else {
+                let recHtml = '<div class="recommendations-grid">';
+                recommendations.forEach((rec, idx) => {
+                    recHtml += `
+                        <div class="recommendation-card">
+                            <div class="rec-header">
+                                <div>
+                                    <div class="rec-title">Switch to <span class="rec-model">${rec.suggested}</span></div>
+                                    <div class="rec-current">Currently using ${rec.current}</div>
+                                </div>
+                                <div class="rec-confidence">
+                                    <div class="rec-confidence-value">${(rec.confidence * 100).toFixed(0)}%</div>
+                                    <div class="rec-confidence-label">confidence</div>
+                                </div>
+                            </div>
+                            <div class="rec-reason">${rec.reason}</div>
+                            <div class="rec-meta">
+                                <span class="rec-savings">Save ${rec.potentialSavings} tokens</span>
+                                <span>${rec.tasksSinceLastRec} tasks analyzed</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                recHtml += '</div>';
+                document.getElementById('recommendations-container').innerHTML = recHtml;
+            }
+
+            // Clear error if we loaded successfully
+            document.getElementById('error-container').innerHTML = '';
+        }
+
+        function showError(message) {
+            document.getElementById('error-container').innerHTML = `<div class="error">${message}</div>`;
+        }
+
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+        }
+
+        // Initial fetch
+        fetchData();
+
+        // Refresh every 30 seconds
+        setInterval(fetchData, 30000);
+    </script>
+</body>
+</html>
