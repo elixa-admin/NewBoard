@@ -1,15 +1,18 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "packages/frontend/public/index.html", "use": "@vercel/static" },
-    { "src": "api/health.js", "use": "@vercel/node" },
-    { "src": "api/session.js", "use": "@vercel/node" },
-    { "src": "api/recommendations.js", "use": "@vercel/node" }
-  ],
+  "buildCommand": "npm run build",
+  "outputDirectory": "packages/frontend/public",
   "routes": [
-    { "src": "/api/health", "dest": "api/health.js" },
-    { "src": "/api/session/current", "dest": "api/session.js" },
-    { "src": "/api/recommendations", "dest": "api/recommendations.js" },
-    { "src": "/(.*)", "dest": "packages/frontend/public/index.html" }
+    { "src": "/api/(.*)", "dest": "/api/$1.json" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/api/**",
+      "headers": [
+        { "key": "Content-Type", "value": "application/json" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    }
   ]
 }
