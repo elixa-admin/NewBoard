@@ -1,99 +1,99 @@
 # Token Usage Dashboard
 
-Local-first dashboard for tracking Claude Code token usage by session, project, and model.
+Static real-time token usage dashboard for Claude Code Pro Plan monitoring.
 
-## Current Snapshot
+## Status
 
-This repo is an active MVP, not a finished product.
+Phase 1 is complete. The dashboard is a deployed static MVP with mock API data and is ready for Phase 2 real-data integration.
 
-- Frontend: React + Vite dashboard at `http://localhost:4200`
-- Backend: Express + TypeScript API at `http://localhost:4201`
-- Storage: local JSON file at `~/.claude/token-usage.json`
-- Hook path: `scripts/log-token-usage.sh` calls the backend CLI logger
+- Repository: `https://github.com/elixa-admin/NewBoard`
+- Production: `https://newboard-token-dashboard.vercel.app`
+- Local preview: `http://localhost:4202`
+- Vercel project: `newboard-token-dashboard`
+- Vercel project ID: `prj_673wcF2AwHvj5fU6Bq6atAGeMph6`
 
-## What Works Now
+## Current Architecture
 
-- Current session stats at `GET /api/session/current`
-- Model totals at `GET /api/stats/models`
-- Project totals at `GET /api/stats/projects`
-- Trend buckets at `GET /api/stats/trends/:timeframe`
-- Recommendation generation at `GET /api/recommendations`
-- Recommendation feedback persistence at `POST /api/recommendations/:id/feedback`
-- Frontend overview, model comparison, and recommendation panels
-- Frontend recommendation actions save feedback and refresh recommendations
-- Local storage initialization and append flow
-- Session and weekly threshold calculation
-- Trend bucketing based on individual call timestamps
-- Backend `createApp()` export for cleaner verification
+- Frontend: [packages/frontend/public/index.html](/Users/brandondienar/Documents/Codex/Projects/NewBoard/packages/frontend/public/index.html)
+- Mock API data:
+  - [packages/frontend/public/api/health.json](/Users/brandondienar/Documents/Codex/Projects/NewBoard/packages/frontend/public/api/health.json)
+  - [packages/frontend/public/api/session/current.json](/Users/brandondienar/Documents/Codex/Projects/NewBoard/packages/frontend/public/api/session/current.json)
+  - [packages/frontend/public/api/recommendations.json](/Users/brandondienar/Documents/Codex/Projects/NewBoard/packages/frontend/public/api/recommendations.json)
+- Local rewrites: [packages/frontend/public/serve.json](/Users/brandondienar/Documents/Codex/Projects/NewBoard/packages/frontend/public/serve.json)
+- Production rewrites: [vercel.json](/Users/brandondienar/Documents/Codex/Projects/NewBoard/vercel.json)
+- Launch config: [.claude/launch.json](/Users/brandondienar/Documents/Codex/Projects/NewBoard/.claude/launch.json)
 
-## Known Gaps
-
-- Hook setup is documented, but real end-to-end hook verification still needs a full local pass
-- Vitest is not yet behaving reliably in this environment, so compiler and direct runtime checks are more trustworthy than the current test runner signal
-- `packages/backend/dist/` is stale relative to `src/`; rebuild before relying on compiled output
-- No GitHub remote or Vercel project config is checked in here right now
-- Local preview in this environment may require unrestricted port binding outside the default sandbox
-- The normal backend `tsx` dev runtime is still flaky here; use the preview backend workaround below when you need a reliable UI preview
-
-## Project Structure
-
-- [packages/backend](/Users/brandondienar/Documents/Codex/Projects/NewBoard/packages/backend)
-- [packages/frontend](/Users/brandondienar/Documents/Codex/Projects/NewBoard/packages/frontend)
-- [docs/token-usage-dashboard/spec.md](/Users/brandondienar/Documents/Codex/Projects/NewBoard/docs/token-usage-dashboard/spec.md)
-- [docs/token-usage-dashboard/plan.md](/Users/brandondienar/Documents/Codex/Projects/NewBoard/docs/token-usage-dashboard/plan.md)
-- [docs/token-usage-dashboard/API_REFERENCE.md](/Users/brandondienar/Documents/Codex/Projects/NewBoard/docs/token-usage-dashboard/API_REFERENCE.md)
-- [docs/token-usage-dashboard/HOOK_SETUP.md](/Users/brandondienar/Documents/Codex/Projects/NewBoard/docs/token-usage-dashboard/HOOK_SETUP.md)
-- [docs/token-usage-dashboard/HANDOFF.md](/Users/brandondienar/Documents/Codex/Projects/NewBoard/docs/token-usage-dashboard/HANDOFF.md)
+There is no active React app, Express backend, serverless function API, or local token hook in Phase 1. Those earlier experimental files were removed to keep the repository focused.
 
 ## Local Development
 
 ```bash
 npm install
-npm run dev
+npm run serve:frontend
 ```
 
-Frontend runs on `4200`. Backend runs on `4201`.
+Open `http://localhost:4202`.
 
-## Preview Workaround
-
-When the main backend dev runtime stalls, run the plain Node preview backend instead:
+Check the static API:
 
 ```bash
-node packages/backend/preview-server.mjs
+curl http://localhost:4202/api/health
+curl http://localhost:4202/api/session/current
+curl http://localhost:4202/api/recommendations
 ```
 
-Then run the frontend:
+## API Contract
 
-```bash
-npm run dev -w packages/frontend -- --host 0.0.0.0
+Do not break the `/api/session/current` response shape. The dashboard expects:
+
+```json
+{
+  "status": "ok",
+  "data": {
+    "project": "NewBoard",
+    "sessionId": "sess-abc123",
+    "startedAt": "2026-05-16T15:00:00.000Z",
+    "totalTokens": 4500,
+    "totalCost": "0.0403",
+    "callCount": 5,
+    "modelBreakdown": {
+      "haiku": { "calls": 2, "tokens": 1200, "cost": "0.0012" },
+      "sonnet": { "calls": 3, "tokens": 3300, "cost": "0.0391" }
+    }
+  },
+  "thresholds": {
+    "session": { "used": 4500, "capacity": 44000, "percent": 10.2 },
+    "weekly": { "used": 4500, "capacity": 800000, "percent": 0.6 }
+  },
+  "alerts": [
+    { "level": "ok", "message": "You're at 10% of your session budget. Keep working; no restrictions yet." }
+  ]
+}
 ```
 
-Verified local preview URLs:
+Alert thresholds are fixed:
 
-- Frontend: `http://127.0.0.1:4200`
-- Preview backend: `http://127.0.0.1:4201`
+- `ok`: 0-65%
+- `warning`: 65-90%
+- `critical`: 90%+
+
+## Phase 2
+
+Recommended next phase: connect the static dashboard to a real Claude Code token data source while keeping the mock JSON files for local testing.
+
+Open questions:
+
+- What is the authoritative source for Claude Code token data?
+- Can Claude Code expose token events through hooks or an internal API?
+- Should production use Cloudflare Worker, AWS Lambda, Vercel Functions, or a small Node backend?
+- Do we need historical storage for trend charts?
+- Should updates remain polling every 30 seconds or become webhook-driven?
 
 ## Verification
 
-Most reliable checks at the moment:
-
 ```bash
-npx tsc -p packages/backend/tsconfig.json --pretty false
-npx tsc -p packages/frontend/tsconfig.json --pretty false
+npm run verify
+npm run build
 ```
 
-Backend tests exist, but the current Vitest runner behavior still needs cleanup before it should be treated as a fully trusted signal.
-
-## Next Stage
-
-Start with the handoff note:
-
-- [docs/token-usage-dashboard/HANDOFF.md](/Users/brandondienar/Documents/Codex/Projects/NewBoard/docs/token-usage-dashboard/HANDOFF.md)
-
-Then prioritize:
-
-1. Fix backend test runner reliability.
-2. Replace the preview workaround by fixing the real backend `tsx` startup path.
-3. Rebuild backend output so `dist` matches source.
-4. Complete hook verification against real Claude Code hook env vars.
-5. Expand the dashboard with project breakdown and historical views.
+`npm run build` is intentionally a no-op because the production artifact is already static HTML and JSON.

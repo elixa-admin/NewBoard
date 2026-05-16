@@ -1,5 +1,7 @@
 # Token Usage Dashboard Spec
 
+> Historical note: this spec describes the broader original local-first vision. The active Phase 1 implementation is now a static HTML dashboard plus static JSON API files. Treat `README.md`, `DEPLOYMENT_SUMMARY.md`, and `MASTER_PROMPT.md` as the current handoff source of truth.
+
 ## What
 
 A local-first web dashboard that monitors Claude Code token consumption across sessions, projects, and models. It displays real-time usage against Pro Plan limits (44K tokens/5-hour window, weekly rolling cap), alerts at 65/75/90% thresholds, tracks spending per model (Haiku vs Sonnet vs Opus), learns from historical patterns per sprint, and recommends model switches based on task type (exploration vs critical work) to optimize credit usage and prevent overage.

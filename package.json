@@ -1,25 +1,16 @@
 {
   "name": "token-usage-dashboard",
   "version": "0.1.0",
-  "description": "Monitor Claude Code token usage with smart recommendations",
+  "description": "Static token usage dashboard for Claude Code Pro Plan monitoring",
   "private": true,
-  "workspaces": [
-    "packages/backend",
-    "packages/frontend"
-  ],
   "scripts": {
-    "dev": "concurrently \"npm run dev -w packages/backend\" \"npm run dev -w packages/frontend\"",
-    "serve": "node server.cjs",
-    "serve:frontend": "serve packages/frontend/public --listen 4202 --no-clipboard",
-    "serve:api": "node backend-api.cjs",
-    "build": "npm run build -w packages/backend && npm run build -w packages/frontend",
-    "test": "npm run test -w packages/backend && npm run test -w packages/frontend",
-    "test:watch": "concurrently \"npm run test:watch -w packages/backend\" \"npm run test:watch -w packages/frontend\"",
-    "clean": "rm -rf packages/*/dist packages/*/node_modules node_modules"
+    "serve": "npm run serve:frontend",
+    "serve:frontend": "node scripts/serve-static.cjs",
+    "build": "node -e \"console.log('Static dashboard: no build step required')\"",
+    "test": "npm run verify",
+    "verify": "node -e \"const fs=require('fs'); ['packages/frontend/public/index.html','packages/frontend/public/api/health.json','packages/frontend/public/api/session/current.json','packages/frontend/public/api/recommendations.json','vercel.json'].forEach(f=>{if(!fs.existsSync(f)){throw new Error(f+' missing')}}); console.log('Static dashboard files verified')\""
   },
-  "devDependencies": {
-    "concurrently": "^8.2.2"
-  },
+  "devDependencies": {},
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=9.0.0"

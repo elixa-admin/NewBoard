@@ -1,5 +1,7 @@
 # Token Usage Dashboard — Sprint Plan
 
+> Historical note: this plan describes the original local backend sprint. Phase 1 has since shipped as a static Vercel-ready dashboard. Treat `README.md`, `DEPLOYMENT_SUMMARY.md`, and `MASTER_PROMPT.md` as the current source of truth for the next phase.
+
 ## Overview
 
 This sprint executes the Token Usage Dashboard spec: a local-first React + Node.js app that monitors Claude Code token consumption, alerts at 65/75/90% session limits, recommends model switches, and learns from historical patterns.

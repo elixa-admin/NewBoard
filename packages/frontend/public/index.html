@@ -516,7 +516,7 @@
                 updateStatus('Last updated: ' + new Date().toLocaleTimeString());
             } catch (err) {
                 console.error('Dashboard error:', err);
-                showError('Failed to load dashboard data. Check that backend is running on http://localhost:4201');
+                showError('Failed to load dashboard data. Check that the static API is reachable on http://localhost:4202/api/health');
                 updateStatus('Error loading data');
             }
         }

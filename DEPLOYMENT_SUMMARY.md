@@ -1,108 +1,104 @@
-# Token Usage Dashboard - Deployment Complete ✅
+# Deployment Summary
 
-## What Was Built
+## Status
 
-A real-time token usage monitoring dashboard for Claude Code that tracks:
-- Session token consumption vs. Pro Plan limits (44K tokens/session)
-- Weekly token consumption vs. Pro Plan limits (800K tokens/week)
-- Model-specific breakdown (Haiku, Sonnet, Opus)
-- Smart recommendations for cost optimization
-- Real-time alert system (OK, Warning, Critical states)
+Phase 1 is complete and deployed.
 
-## Architecture
+- GitHub: `https://github.com/elixa-admin/NewBoard`
+- Branch: `main`
+- Production: `https://newboard-token-dashboard.vercel.app`
+- Vercel project: `newboard-token-dashboard`
+- Vercel project ID: `prj_673wcF2AwHvj5fU6Bq6atAGeMph6`
+- Local preview: `http://localhost:4202`
 
-### Frontend
-- **Location**: `packages/frontend/public/index.html`
-- **Size**: 19KB single-file HTML application
-- **Tech**: Vanilla JavaScript + embedded CSS (no build step)
-- **Features**: 
-  - Responsive dashboard with gauges and charts
-  - Real-time data fetching from API endpoints
-  - Color-coded alerts (green/orange/red)
-  - Model usage breakdown
-  - Cost-saving recommendations
+## What Is Deployed
 
-### Backend (Static API)
-- **Approach**: Static JSON files served via URL rewrites
-- **Endpoints**:
-  - `/api/health` → `api/health.json`
-  - `/api/session/current` → `api/session/current.json`
-  - `/api/recommendations` → `api/recommendations.json`
-- **Server**: npm `serve` package on port 4202 (local) / Vercel edge network (production)
+The deployed application is a static dashboard with static JSON API files.
 
-### Configuration
-- **Launch Config**: `.claude/launch.json` - npm script for local development
-- **Serve Config**: `packages/frontend/public/serve.json` - URL rewrites and CORS headers
-- **Vercel Config**: `vercel.json` - Static file serving configuration
+Frontend:
 
-## Local Development
+- `packages/frontend/public/index.html`
 
-Start the dashboard:
+Static API:
+
+- `packages/frontend/public/api/health.json`
+- `packages/frontend/public/api/session/current.json`
+- `packages/frontend/public/api/recommendations.json`
+
+Routing:
+
+- Local: `packages/frontend/public/serve.json`
+- Production: `vercel.json`
+
+## Local Verification
+
 ```bash
+npm install
 npm run serve:frontend
 ```
 
-The dashboard will be available at `http://localhost:4202`
+Open:
 
-API endpoints respond with mock data:
-- Session: 4,500 tokens (10.2% of session quota)
-- Weekly: 4,500 tokens (0.6% of weekly quota)
-- Models: Haiku (1200 tokens), Sonnet (3300 tokens)
-
-## Deployment Status
-
-✅ **GitHub**: All changes committed and pushed to `main` branch
-```
-8287498 chore: Update vercel.json to serve static JSON API files
-a60dccd feat: Add static JSON API endpoints and serve configuration for token dashboard
+```text
+http://localhost:4202
 ```
 
-✅ **Vercel**: Git integration configured (`.vercel/project.json`)
-- Project: `newboard-token-dashboard`
-- Deployment automatically triggered on push to GitHub
-- Production URL: Check Vercel dashboard for live deployment
+Check endpoints:
 
-## Key Files Changed
+```bash
+curl http://localhost:4202/api/health
+curl http://localhost:4202/api/session/current
+curl http://localhost:4202/api/recommendations
+```
 
-1. `package.json`
-   - Added npm scripts: `serve`, `serve:frontend`, `serve:api`
+## Current Mock Data
 
-2. `.claude/launch.json`
-   - Configured to launch frontend via `npm run serve:frontend` on port 4202
+- Session usage: `4,500 / 44,000` tokens
+- Session percent: `10.2%`
+- Weekly usage: `4,500 / 800,000` tokens
+- Weekly percent: `0.6%`
+- Haiku: `1,200` tokens
+- Sonnet: `3,300` tokens
+- Recommendation: switch to Haiku, `87%` confidence
 
-3. `packages/frontend/public/serve.json` (NEW)
-   - URL rewrite rules for API endpoints
-   - CORS headers for cross-origin requests
+## Vercel Configuration
 
-4. `packages/frontend/public/api/*.json` (NEW)
-   - `health.json` - API health status
-   - `session/current.json` - Session token usage data
-   - `recommendations.json` - Cost optimization recommendations
+`vercel.json` serves static files from `packages/frontend/public`.
 
-5. `vercel.json` (UPDATED)
-   - Configured for static file serving
-   - Routes API requests to JSON files
-   - Sets proper headers for API responses
+API routes are rewritten to JSON files:
 
-## Next Steps (Future Enhancement)
+- `/api/health` -> `/api/health.json`
+- `/api/session/current` -> `/api/session/current.json`
+- `/api/recommendations` -> `/api/recommendations.json`
 
-To integrate with real Claude Code token data:
-1. Create a CloudFlare Worker or Lambda to aggregate token usage
-2. Update `/api/session/current.json` with real data via API
-3. Add webhook integration to update recommendations in real-time
-4. Store historical data for trend analysis
+## Why This Architecture
 
-## Verification
+Static JSON was chosen for Phase 1 because it:
 
-✅ Local dashboard running on port 4202
-✅ API endpoints responding with correct data structure
-✅ Frontend renders correctly with mock data
-✅ Changes committed to GitHub
-✅ Vercel deployment configured and triggered
-✅ URL rewrites working for API endpoints
-✅ CORS headers configured for cross-origin requests
+- minimizes moving parts
+- works locally and on Vercel with the same path structure
+- avoids database and function complexity during frontend validation
+- gives Phase 2 a stable contract to replace with real data
 
----
+The single HTML file was chosen because it:
 
-**Deployment completed**: 2026-05-16 19:59 UTC
-**Status**: Ready for production use
+- needs no build step
+- previews quickly
+- deploys predictably
+- makes the API contract easy to validate
+
+## Phase 2 Direction
+
+Connect a real Claude Code token data source while preserving the current static JSON files as fixtures.
+
+Recommended first integration target:
+
+1. Create an endpoint that returns the existing `/api/session/current` schema.
+2. Keep local development on static JSON.
+3. Add configuration for real production endpoint vs mock local data.
+4. Continue 30-second polling until webhook delivery is clearly needed.
+5. Add historical storage only after the current-session flow is reliable.
+
+## Files Removed During Handoff Cleanup
+
+The old React/Vite frontend, Express backend, hook scripts, serverless function stubs, and scratch preview servers were removed because they no longer represent the deployed architecture.
