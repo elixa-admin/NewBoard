@@ -14,6 +14,7 @@ Phase 1 is complete and deployed. The active app is a static dashboard plus stat
 - Local preview: `http://localhost:4202`
 - Vercel project: `newboard-token-dashboard`
 - Vercel project ID: `prj_673wcF2AwHvj5fU6Bq6atAGeMph6`
+- Latest pushed commit during handoff: `108a9cf`
 
 ## Read First
 
@@ -81,6 +82,8 @@ Alert thresholds are fixed:
 ## Next Phase
 
 Start Phase 2a: real data integration.
+
+Before starting Phase 2a, check the latest Vercel deployment. At handoff time, GitHub `main` had the cleanup commits, but production `/api/session/current` was still returning the previous serverless-function-shaped response. Confirm Vercel has deployed commit `108a9cf` or redeploy from the dashboard.
 
 Goal: connect the dashboard to an authoritative Claude Code token data source while preserving the existing static mock data for local development and testing.
 

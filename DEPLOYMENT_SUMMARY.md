@@ -11,6 +11,10 @@ Phase 1 is complete and deployed.
 - Vercel project ID: `prj_673wcF2AwHvj5fU6Bq6atAGeMph6`
 - Local preview: `http://localhost:4202`
 
+Latest GitHub handoff commit verified on `main`: `108a9cf`.
+
+Production verification note: after pushing the handoff cleanup, the Vercel homepage responded, but `/api/session/current` was still serving the previous serverless-function-shaped response during the final check. The next Claude Code session should inspect the latest Vercel deployment and confirm whether the Git integration published commit `108a9cf` successfully.
+
 ## What Is Deployed
 
 The deployed application is a static dashboard with static JSON API files.

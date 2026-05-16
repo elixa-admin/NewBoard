@@ -9,10 +9,13 @@ Token Usage Dashboard for Claude Code Pro Plan monitoring.
 - Branch: `main`
 - Production: `https://newboard-token-dashboard.vercel.app`
 - Vercel project ID: `prj_673wcF2AwHvj5fU6Bq6atAGeMph6`
+- Latest pushed commit during this handoff: `108a9cf`
 
 ## Current Status
 
 Phase 1 is complete and deployed. The working application is a static dashboard plus static JSON API files.
+
+Production caveat: GitHub `main` is current, but the final production check still returned the previous `/api/session/current` shape. Verify the latest Vercel deployment and redeploy commit `108a9cf` if needed.
 
 Local preview:
 
