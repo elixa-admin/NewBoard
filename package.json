@@ -10,7 +10,9 @@
     "test": "npm run verify",
     "verify": "node -e \"const fs=require('fs'); ['packages/frontend/public/index.html','packages/frontend/public/api/health.json','packages/frontend/public/api/session/current.json','packages/frontend/public/api/recommendations.json','vercel.json'].forEach(f=>{if(!fs.existsSync(f)){throw new Error(f+' missing')}}); console.log('Static dashboard files verified')\""
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "serve": "^14.2.6"
+  },
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=9.0.0"
